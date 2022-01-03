@@ -14,11 +14,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddHttpContextAccessor();
 
 var cachingConfigurations = new CachingConfiguration();
 cachingConfigurations.AddConfiguration<GetTodoItemQuery>(TimeSpan.FromMinutes(2));
 cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2));
-builder.Services.AddMediatRCache(cachingConfigurations);
+
+builder.Services.AddMediatRInMemoryCache(cachingConfigurations);
 
 var app = builder.Build();
 
