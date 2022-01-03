@@ -20,6 +20,6 @@ public class InMemoryCachingBehavior<TRequest, TResponse> : IPipelineBehavior<TR
         RequestHandlerDelegate<TResponse> next)
     {
         
-        return _caching.GetOrAddAsync<TResponse>(request.GetType().FullName, () => next(), DateTimeOffset.Now.AddMinutes(2));
+        return _caching.GetOrAddAsync(request, () => next());
     }
 }

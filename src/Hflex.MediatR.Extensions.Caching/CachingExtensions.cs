@@ -10,13 +10,28 @@ public static class CachingExtensions
     public static IServiceCollection AddMediatRInMemoryCache(this IServiceCollection services,
         CachingConfiguration cachingConfiguration)
     {
+        services.AddSingleton(cachingConfiguration);
+        
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
-        services.AddSingleton<IMediatorCaching, InMemoryCachingProvider>();
+        services.TryAdd(ServiceDescriptor.Singleton<IMediatorCaching, InMemoryCachingProvider>());
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InMemoryCachingInvalidateBehavior<,>));
 
-        foreach (var configurationItem in cachingConfiguration.ConfigurationItems)
+        var invalidateCacheTypesDictionary = new InvalidateCacheRequests();
+        foreach (var configurationItem in cachingConfiguration)
         {
-            var requestType = configurationItem.Type;
+            foreach (var valueInvalidatesOnRequest in configurationItem.Value.InvalidatesOnRequests)
+            {
+                if (!invalidateCacheTypesDictionary.TryGetValue(valueInvalidatesOnRequest, out var invalidateQueies))
+                {
+                    invalidateQueies = new HashSet<Type>();
+                    invalidateCacheTypesDictionary[valueInvalidatesOnRequest] = invalidateQueies;
+                }
+
+                invalidateQueies.Add(configurationItem.Key);
+            }
+           
+            var requestType = configurationItem.Key;
             var responseType = requestType.GetInterfaces().FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRequest<>)).GetGenericArguments()[0];
             var genericBaseInterface = typeof(IPipelineBehavior<,>);
             var pipeLineBehaviorInterface = genericBaseInterface.MakeGenericType(requestType, responseType);
@@ -25,7 +40,8 @@ public static class CachingExtensions
             var pipeLineBehaviorCaching = genericCachingBehaviorBase.MakeGenericType(requestType, responseType);
             services.TryAddTransient(pipeLineBehaviorInterface, pipeLineBehaviorCaching);
         }
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+
+        services.AddSingleton(invalidateCacheTypesDictionary);
         return services;
     }
     

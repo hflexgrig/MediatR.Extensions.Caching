@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApiSample.Application.TodoItem.Commands;
 using WebApiSample.Application.TodoItem.Queries;
 using WebApiSample.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using WebApiSample.Models;
@@ -27,8 +28,14 @@ public class WeatherForecastController : ControllerBase
     }
     
     [HttpGet("forecasts")]
-    public Task<List<WeatherForecast>> GetWeatherForecasts()
+    public Task<List<WeatherForecast>> GetWeatherForecasts([FromQuery] GetWeatherForecastsQuery getWeatherForecastsQuery)
     {
-        return _mediator.Send(new GetWeatherForecastsQuery());
+        return _mediator.Send(getWeatherForecastsQuery);
+    }
+
+    [HttpPost]
+    public Task<Unit> Post(CreateTodoItemCommand createTodoItemCommand)
+    {
+        return _mediator.Send(createTodoItemCommand);
     }
 }
