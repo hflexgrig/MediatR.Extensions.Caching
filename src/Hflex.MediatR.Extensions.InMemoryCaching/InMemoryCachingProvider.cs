@@ -1,9 +1,11 @@
 using System.Text.Json;
+using Hflex.MediatR.Extensions.Caching;
+using Hflex.MediatR.Extensions.Caching.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
-namespace Hflex.MediatR.Extensions.Caching;
+namespace Hflex.MediatR.Extensions.InMemoryCaching;
 
 public class InMemoryCachingProvider : IMediatorCaching
 {
@@ -106,16 +108,3 @@ public class InMemoryCachingProvider : IMediatorCaching
     }
 }
 
-public interface IMediatorCaching
-{
-    Task RemoveStartsWithAsync(string key);
-    Task<T?> GetAsync<T>(string key) where T : class;
-    Task RemoveAsync(string key);
-    Task<bool> ContainsAsync(string key);
-    Task AddAsync(string baseKey, string key, object value, DateTimeOffset expiration);
-
-    Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> valueFactory)
-        where TResponse : class;
-
-    Task InvalidateCacheAsync(Type queryRequestType);
-}

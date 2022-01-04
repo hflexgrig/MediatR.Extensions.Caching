@@ -1,17 +1,18 @@
+using Hflex.MediatR.Extensions.Caching.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Hflex.MediatR.Extensions.Caching;
 
-public class InMemoryCachingInvalidateBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
+public class MediatRCachingInvalidateBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where
     TRequest : IRequest<TResponse>
 {
     private readonly IMediatorCaching _caching;
     private readonly InvalidateCacheRequests _invalidateCacheRequests;
 
-    public InMemoryCachingInvalidateBehavior(IMediatorCaching caching, InvalidateCacheRequests invalidateCacheRequests)
+    public MediatRCachingInvalidateBehavior(IMediatorCaching caching, InvalidateCacheRequests invalidateCacheRequests)
     {
         _caching = caching;
         _invalidateCacheRequests = invalidateCacheRequests;

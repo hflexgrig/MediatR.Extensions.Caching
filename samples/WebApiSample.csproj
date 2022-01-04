@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\Hflex.MediatR.Extensions.Caching\Hflex.MediatR.Extensions.Caching.csproj" />
+    <ProjectReference Include="..\src\Hflex.MediatR.Extensions.InMemoryCaching\Hflex.MediatR.Extensions.InMemoryCaching.csproj" />
   </ItemGroup>
 
 </Project>

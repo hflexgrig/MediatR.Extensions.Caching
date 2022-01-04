@@ -1,13 +1,14 @@
-﻿using System.Linq.Expressions;
+using Hflex.MediatR.Extensions.Caching;
+using Hflex.MediatR.Extensions.Caching.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Hflex.MediatR.Extensions.Caching;
+namespace Hflex.MediatR.Extensions.InMemoryCaching;
 
-public static class CachingExtensions
+public static class InMemoryCachingExtensions
 {
-    public static IServiceCollection AddMediatRInMemoryCache(this IServiceCollection services,
+    public static IServiceCollection AddInMemoryCache(this IServiceCollection services,
         CachingConfiguration cachingConfiguration)
     {
         services.AddSingleton(cachingConfiguration);
@@ -15,7 +16,7 @@ public static class CachingExtensions
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
         services.TryAdd(ServiceDescriptor.Singleton<IMediatorCaching, InMemoryCachingProvider>());
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InMemoryCachingInvalidateBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MediatRCachingInvalidateBehavior<,>));
 
         var invalidateCacheTypesDictionary = new InvalidateCacheRequests();
         foreach (var configurationItem in cachingConfiguration)
@@ -36,34 +37,12 @@ public static class CachingExtensions
             var genericBaseInterface = typeof(IPipelineBehavior<,>);
             var pipeLineBehaviorInterface = genericBaseInterface.MakeGenericType(requestType, responseType);
                 
-            var genericCachingBehaviorBase = typeof(InMemoryCachingBehavior<,>);
+            var genericCachingBehaviorBase = typeof(MediatRCachingBehavior<,>);
             var pipeLineBehaviorCaching = genericCachingBehaviorBase.MakeGenericType(requestType, responseType);
             services.TryAddTransient(pipeLineBehaviorInterface, pipeLineBehaviorCaching);
         }
 
         services.AddSingleton(invalidateCacheTypesDictionary);
-        return services;
-    }
-    
-    public static IServiceCollection AddMediatRDistributedCache(this IServiceCollection services,
-        CachingConfiguration cachingConfiguration)
-    {
-        //services.AddHttpContextAccessor();
-        //services.AddDistributedMemoryCache();
-        //services.AddMemoryCache();
-        services.AddSingleton<IMediatorCaching, InMemoryCachingProvider>();
-        // foreach (var configurationItem in cachingConfiguration.ConfigurationItems)
-        // {
-        //     var requestType = configurationItem.Type;
-        //     var responseType = requestType.GetInterfaces().FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRequest<>)).GetGenericArguments()[0];
-        //     var genericBaseInterface = typeof(IPipelineBehavior<,>);
-        //     var pipeLineBehaviorInterface = genericBaseInterface.MakeGenericType(requestType, responseType);
-        //         
-        //     var genericCachingBehaviorBase = typeof(InMemoryCachingBehavior<,>);
-        //     var pipeLineBehaviorCaching = genericCachingBehaviorBase.MakeGenericType(requestType, responseType);
-        //     services.TryAddTransient(pipeLineBehaviorInterface, pipeLineBehaviorCaching);
-        // }
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
         return services;
     }
 }

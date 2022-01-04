@@ -1,5 +1,6 @@
 using System.Reflection;
 using Hflex.MediatR.Extensions.Caching;
+using Hflex.MediatR.Extensions.InMemoryCaching;
 using MediatR;
 using WebApiSample.Application.TodoItem.Commands;
 using WebApiSample.Application.TodoItem.Queries;
@@ -21,7 +22,7 @@ var cachingConfigurations = new CachingConfiguration();
 cachingConfigurations.AddConfiguration<GetTodoItemQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
 cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
 
-builder.Services.AddMediatRInMemoryCache(cachingConfigurations);
+builder.Services.AddInMemoryCache(cachingConfigurations);
 
 var app = builder.Build();
 
