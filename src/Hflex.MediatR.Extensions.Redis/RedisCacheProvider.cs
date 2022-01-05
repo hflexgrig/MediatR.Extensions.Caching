@@ -1,5 +1,6 @@
 using System.Net;
 using Hflex.MediatR.Extensions.Caching.Interfaces;
+using Hflex.MediatR.Extensions.Caching.Services;
 using Hflex.MediatR.Extensions.Redis.Extensions;
 using StackExchange.Redis;
 
@@ -8,10 +9,13 @@ namespace Hflex.MediatR.Extensions.Redis;
 public class RedisCacheProvider : IMediatorCaching
 {
     private readonly IDatabase _redisCache;
+    private readonly ICacheKeyService _cacheKeyService;
 
-    public RedisCacheProvider(IDatabase redisCache)
+    public RedisCacheProvider(IDatabase redisCache,
+        ICacheKeyService cacheKeyService)
     {
         _redisCache = redisCache;
+        _cacheKeyService = cacheKeyService;
     }
 
     public async Task RemoveStartsWithAsync(string key)
@@ -92,23 +96,7 @@ public class RedisCacheProvider : IMediatorCaching
         return await _redisCache.KeyExistsAsync(key);
     }
 
-    public Task AddAsync(string baseKey, string key, object value, DateTimeOffset expiration)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> valueFactory)
-        where TResponse : class
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task InvalidateCacheAsync(Type queryRequestType)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task AddAsync(string key, object value, DateTimeOffset expiration, string dependsOnKey = null)
+    public async Task AddAsync(string baseKey, string key, object value, DateTimeOffset expiration)
     {
         // Lets not store the base type (will be dependsOnKey later) since we want to use it as a set!
         if (Equals(value, string.Empty))
@@ -124,11 +112,30 @@ public class RedisCacheProvider : IMediatorCaching
             value = byteArray.Compress();
         }
 
-        bool primaryAdded = await _redisCache.SetAsync(key, value, expiration.Subtract(DateTimeOffset.Now));
+        bool primaryAdded = await _redisCache.SetAsync($"{baseKey}{key}", value, expiration.Subtract(DateTimeOffset.Now));
+    }
 
-        if (dependsOnKey != null && primaryAdded)
+    public async Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> valueFactory)
+        where TResponse : class
+    {
+        var (baseKey, key, config) = _cacheKeyService.GenerateDefaultKey(request);
+        
+        var cached = await _redisCache.GetAsync<TResponse?>($"{baseKey}{key}");
+        if (cached == null)
         {
-            await _redisCache.SetAddAsync(dependsOnKey, key);
+            cached = await valueFactory();
+            var expiration = DateTimeOffset.Now.Add(config.Duration);
+
+            await AddAsync(baseKey, key, cached, expiration);
         }
+
+        return cached;
+    }
+
+    public Task InvalidateCacheAsync(Type queryRequestType)
+    {
+        var (baseKey, _, _) = _cacheKeyService.GenerateDefaultKey(queryRequestType);
+
+        return RemoveStartsWithAsync(baseKey);
     }
 }

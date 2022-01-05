@@ -1,21 +1,27 @@
 using Hflex.MediatR.Extensions.Caching;
 using Hflex.MediatR.Extensions.Caching.Interfaces;
+using Hflex.MediatR.Extensions.Caching.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace Hflex.MediatR.Extensions.Redis;
 
 public static class RedisExtensions
 {
     public static IServiceCollection AddRedisCache(this IServiceCollection services,
-        CachingConfiguration cachingConfiguration)
+        CachingConfiguration cachingConfiguration, string connectionString)
     {
         services.AddSingleton(cachingConfiguration);
-        
+        services.AddSingleton<ICacheKeyService, CacheKeyService>();
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
-        // services.TryAdd(ServiceDescriptor.Singleton<IMediatorCaching, InMemoryCachingProvider>());
+        services.TryAdd(ServiceDescriptor.Singleton<IMediatorCaching, RedisCacheProvider>());
+        
+        services.TryAdd(ServiceDescriptor.Singleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(connectionString)));
+        services.TryAdd(ServiceDescriptor.Transient<IDatabase>(e => e.GetRequiredService<IConnectionMultiplexer>().GetDatabase(-1, null)));
+
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MediatRCachingInvalidateBehavior<,>));
 
         var invalidateCacheTypesDictionary = new InvalidateCacheRequests();

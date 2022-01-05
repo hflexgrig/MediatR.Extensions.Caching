@@ -1,6 +1,7 @@
 using System.Reflection;
 using Hflex.MediatR.Extensions.Caching;
 using Hflex.MediatR.Extensions.InMemoryCaching;
+using Hflex.MediatR.Extensions.Redis;
 using MediatR;
 using WebApiSample.Application.TodoItem.Commands;
 using WebApiSample.Application.TodoItem.Queries;
@@ -21,10 +22,12 @@ builder.Services.AddHttpContextAccessor();
 var cachingConfigurations = new CachingConfiguration();
 cachingConfigurations.AddConfiguration<GetTodoItemQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
 cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
+builder.Services.AddRedisCache(cachingConfigurations, builder.Configuration.GetConnectionString("RedisConnectionString"));
 
-builder.Services.AddInMemoryCache(cachingConfigurations);
+//builder.Services.AddInMemoryCache(cachingConfigurations);
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

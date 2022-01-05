@@ -1,7 +1,5 @@
-using System.Text.Json;
-using Hflex.MediatR.Extensions.Caching;
 using Hflex.MediatR.Extensions.Caching.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Hflex.MediatR.Extensions.Caching.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
@@ -10,17 +8,14 @@ namespace Hflex.MediatR.Extensions.InMemoryCaching;
 public class InMemoryCachingProvider : IMediatorCaching
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly CachingConfiguration _cachingConfiguration;
+    private readonly ICacheKeyService _cacheKeyService;
     private const string CancellationTokenKey = ":cts";
 
     public InMemoryCachingProvider(IMemoryCache memoryCache,
-        IHttpContextAccessor httpContextAccessor,
-        CachingConfiguration cachingConfiguration)
+        ICacheKeyService cacheKeyService)
     {
         _memoryCache = memoryCache;
-        _httpContextAccessor = httpContextAccessor;
-        _cachingConfiguration = cachingConfiguration;
+        _cacheKeyService = cacheKeyService;
     }
 
     public Task RemoveStartsWithAsync(string key)
@@ -77,11 +72,7 @@ public class InMemoryCachingProvider : IMediatorCaching
 
     public Task InvalidateCacheAsync(Type queryRequestType)
     {
-        _cachingConfiguration.TryGetValue(queryRequestType, out var config);
-        var identityString =
-            config.PerUser ? $"user:{_httpContextAccessor.HttpContext?.User?.Identity?.Name};" : string.Empty;
-
-        var baseKey = $"class:{queryRequestType.FullName};{identityString}";
+        var (baseKey, _, _) = _cacheKeyService.GenerateDefaultKey(queryRequestType);
 
         return RemoveAsync(baseKey);
     }
@@ -89,12 +80,8 @@ public class InMemoryCachingProvider : IMediatorCaching
     public async Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request,
         Func<Task<TResponse>> valueFactory) where TResponse : class
     {
-        _cachingConfiguration.TryGetValue(typeof(TRequest), out var config);
-        var identityString =
-            config.PerUser ? $"user:{_httpContextAccessor.HttpContext?.User?.Identity?.Name};" : string.Empty;
+        var (baseKey, key, config) = _cacheKeyService.GenerateDefaultKey(request);
 
-        var baseKey = $"class:{typeof(TRequest).FullName};{identityString}";
-        var key = $"token:{JsonSerializer.Serialize(request)}";
         var cached = _memoryCache.Get<TResponse?>($"{baseKey}{key}");
         if (cached == null)
         {

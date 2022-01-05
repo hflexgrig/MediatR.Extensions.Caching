@@ -1,5 +1,6 @@
 using Hflex.MediatR.Extensions.Caching;
 using Hflex.MediatR.Extensions.Caching.Interfaces;
+using Hflex.MediatR.Extensions.Caching.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,7 +13,8 @@ public static class InMemoryCachingExtensions
         CachingConfiguration cachingConfiguration)
     {
         services.AddSingleton(cachingConfiguration);
-        
+        services.AddSingleton<ICacheKeyService, CacheKeyService>();
+
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
         services.TryAdd(ServiceDescriptor.Singleton<IMediatorCaching, InMemoryCachingProvider>());
