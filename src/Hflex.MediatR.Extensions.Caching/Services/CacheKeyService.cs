@@ -22,8 +22,19 @@ public class CacheKeyService : ICacheKeyService
             config.PerUser ? $"user:{_httpContextAccessor.HttpContext?.User?.Identity?.Name};" : string.Empty;
 
         var baseKey = $"class:{typeof(TRequest).FullName};{identityString}";
-        var key = $"token:{JsonSerializer.Serialize(request)}";
+        var key = config.KeyFactory == null ? $"token:{JsonSerializer.Serialize(request)}" : config.KeyFactory();
 
         return (baseKey, key, config);
+    }
+    
+    public (string baseKey, ConfigurationItem config) GenerateBaseKeyOnly(Type requestType)
+    {
+        _cachingConfiguration.TryGetValue(requestType, out var config);
+        var identityString =
+            config.PerUser ? $"user:{_httpContextAccessor.HttpContext?.User?.Identity?.Name};" : string.Empty;
+
+        var baseKey = $"class:{requestType.FullName};{identityString}";
+
+        return (baseKey, config);
     }
 }

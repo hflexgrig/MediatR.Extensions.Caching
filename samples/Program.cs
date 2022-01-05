@@ -20,8 +20,8 @@ builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddHttpContextAccessor();
 
 var cachingConfigurations = new CachingConfiguration();
-cachingConfigurations.AddConfiguration<GetTodoItemQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
-cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2), false, typeof(CreateTodoItemCommand));
+cachingConfigurations.AddConfiguration<GetTodoItemQuery>(duration: TimeSpan.FromMinutes(2), false);
+cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2), false, null, typeof(CreateTodoItemCommand));
 builder.Services.AddRedisCache(cachingConfigurations, builder.Configuration.GetConnectionString("RedisConnectionString"));
 
 //builder.Services.AddInMemoryCache(cachingConfigurations);
