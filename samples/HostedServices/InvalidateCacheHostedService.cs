@@ -1,5 +1,6 @@
 using Hflex.MediatR.Extensions.Caching.Models;
 using MediatR;
+using WebApiSample.Application.TodoItems.Queries;
 using WebApiSample.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 
 namespace WebApiSample.HostedServices;
@@ -21,6 +22,7 @@ public class InvalidateCacheHostedService:BackgroundService
 
     private void TimerCallback(object? state)
     {
-        _mediator.Publish(new InvalidateCacheNotification { RequestType = typeof(GetWeatherForecastsQuery)});
+        //Invalidate cache for GetTodoItemsQuery
+        _mediator.Publish(new InvalidateCacheNotification { RequestType = typeof(GetTodoItemsQuery)});
     }
 }

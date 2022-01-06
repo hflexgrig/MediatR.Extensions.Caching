@@ -8,14 +8,12 @@ namespace MediatR.Extensions.Caching.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class TodoItemsController : ControllerBase
 {
-    
-
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly IMediator _mediator;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger,
+    public TodoItemsController(ILogger<WeatherForecastController> logger,
         IMediator mediator)
     {
         _logger = logger;
@@ -23,14 +21,14 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    public Task<List<WeatherForecast>> Get([FromQuery] GetWeatherForecastsQuery getWeatherForecastsQuery)
+    public Task<List<TodoItemDto>> Get([FromQuery] GetTodoItemsQuery getTodoItemsQuery)
     {
-        return _mediator.Send(getWeatherForecastsQuery);
+        return _mediator.Send(getTodoItemsQuery);
     }
-
-    [HttpPut]
-    public Task<Unit> Put()
+    
+    [HttpPost]
+    public Task<Unit> Post(CreateTodoItemCommand createTodoItemCommand)
     {
-        return _mediator.Send(new UpdateWeatherForecastsCommand());
+        return _mediator.Send(createTodoItemCommand);
     }
 }

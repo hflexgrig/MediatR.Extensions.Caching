@@ -3,8 +3,10 @@ using Hflex.MediatR.Extensions.Caching;
 using Hflex.MediatR.Extensions.InMemoryCaching;
 using Hflex.MediatR.Extensions.Redis;
 using MediatR;
-using WebApiSample.Application.TodoItem.Commands;
-using WebApiSample.Application.TodoItem.Queries;
+using WebApiSample.Application.Common.Repository;
+using WebApiSample.Application.TodoItems.Commands;
+using WebApiSample.Application.TodoItems.Queries;
+using WebApiSample.Application.WeatherForecasts.Commands.UpdateWeatherForecasts;
 using WebApiSample.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using WebApiSample.HostedServices;
 
@@ -19,14 +21,22 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddSingleton<TodoItemsRepository>();
 var cachingConfigurations = new CachingConfiguration();
-cachingConfigurations.AddConfiguration<GetTodoItemQuery>(duration: TimeSpan.FromMinutes(2), false);
-cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(10), false, null, typeof(CreateTodoItemCommand));
 
+//GetTodoItemsQuery will be invalidated, when timer notification will be fired on InvalidateCacheHostedService
+cachingConfigurations.AddConfiguration<GetTodoItemsQuery>(duration: TimeSpan.FromMinutes(2), false);
+
+//GetWeatherForecastsQuery will be invalidated, when UpdateWeatherForecastsCommand called
+cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(10), false, null, 
+    typeof(UpdateWeatherForecastsCommand));
+
+//Add Redis cache with caching configuration.
 builder.Services.AddRedisCache(cachingConfigurations, builder.Configuration.GetConnectionString("RedisConnectionString"));
 
+//Register hosted service, where timer works sending notification for invalidating GetTodoItemsQuery cache
 builder.Services.AddHostedService<InvalidateCacheHostedService>();
+
 //builder.Services.AddInMemoryCache(cachingConfigurations);
 
 var app = builder.Build();
