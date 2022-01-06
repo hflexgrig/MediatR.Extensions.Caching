@@ -134,10 +134,15 @@ public class RedisCacheProvider : IMediatorCaching
         return cached;
     }
 
-    public Task InvalidateCacheAsync(Type queryRequestType)
+    public Task InvalidateCacheAsync(params Type[] queryRequestTypes)
     {
-        var (baseKey, _) = _cacheKeyService.GenerateBaseKeyOnly(queryRequestType);
+        foreach (var queryRequestType in queryRequestTypes)
+        {
+            var (baseKey, _) = _cacheKeyService.GenerateBaseKeyOnly(queryRequestType);
 
-        return RemoveStartsWithAsync($"{baseKey}*");
+            RemoveStartsWithAsync($"{baseKey}*");
+        }
+
+        return Task.CompletedTask;
     }
 }

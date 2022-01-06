@@ -14,5 +14,5 @@ public interface IMediatorCaching
         where TResponse : class
         where  TRequest: class, IBaseRequest;
 
-    Task InvalidateCacheAsync(Type queryRequestType);
+    Task InvalidateCacheAsync(params Type[] queryRequestTypes);
 }

@@ -15,7 +15,7 @@ public class InvalidateCacheNotificationHandler:INotificationHandler<InvalidateC
 
     public Task Handle(InvalidateCacheNotification notification, CancellationToken cancellationToken)
     {
-        var requestType = notification.RequestType;
-        return _caching.InvalidateCacheAsync(requestType);
+        var requestTypes = notification.RequestTypes;
+        return _caching.InvalidateCacheAsync(requestTypes);
     }
 }

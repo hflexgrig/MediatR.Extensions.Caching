@@ -71,11 +71,16 @@ public class InMemoryCachingProvider : IMediatorCaching
         return Task.CompletedTask;
     }
 
-    public Task InvalidateCacheAsync(Type queryRequestType)
+    public Task InvalidateCacheAsync(params Type[] queryRequestTypes)
     {
-        var (baseKey, _) = _cacheKeyService.GenerateBaseKeyOnly(queryRequestType);
+        foreach (var queryRequestType in queryRequestTypes)
+        {
+            var (baseKey, _) = _cacheKeyService.GenerateBaseKeyOnly(queryRequestType);
 
-        return RemoveAsync(baseKey);
+            RemoveAsync(baseKey);
+        }
+
+        return Task.CompletedTask;
     }
 
     public async Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request,

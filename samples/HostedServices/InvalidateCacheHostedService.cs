@@ -23,6 +23,6 @@ public class InvalidateCacheHostedService:BackgroundService
     private void TimerCallback(object? state)
     {
         //Invalidate cache for GetTodoItemsQuery
-        _mediator.Publish(new InvalidateCacheNotification { RequestType = typeof(GetTodoItemsQuery)});
+        _mediator.Publish(new InvalidateCacheNotification { RequestTypes = new []{typeof(GetTodoItemsQuery)} });
     }
 }

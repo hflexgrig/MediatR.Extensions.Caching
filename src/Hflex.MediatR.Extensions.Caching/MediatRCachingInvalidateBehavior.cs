@@ -18,17 +18,36 @@ public class MediatRCachingInvalidateBehavior<TRequest, TResponse> : IPipelineBe
         _invalidateCacheRequests = invalidateCacheRequests;
     }
 
-    public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
+    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
         RequestHandlerDelegate<TResponse> next)
     {
-        //If this is command, which invalidates it's queries, then we invalidate cache for all queries
-        if (_invalidateCacheRequests.TryGetValue(typeof(TRequest), out var queryRequests))
+       
+        bool isException = false;
+
+        try
         {
-            foreach (var queryRequest in queryRequests)
+            return await next();
+        }
+        catch (Exception e)
+        {
+            isException = true;
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            if (!isException)
             {
-                _caching.InvalidateCacheAsync(queryRequest);
+                //If this is command, which invalidates it's queries, then we invalidate cache for all queries
+                if (_invalidateCacheRequests.TryGetValue(typeof(TRequest), out var queryRequests))
+                {
+                    foreach (var queryRequest in queryRequests)
+                    {
+                        _caching.InvalidateCacheAsync(queryRequest);
+                    }
+                }
             }
         }
-        return next();
+        
     }
 }
