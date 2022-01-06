@@ -30,7 +30,7 @@ Inspired by https://github.com/Iamcerba/AspNetCore.CacheOutput
  ```
  var cachingConfigurations = new CachingConfiguration();
  cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(duration: TimeSpan.FromMinutes(10),//Cache duration
- perUser: false, //Set to true for caching per user (adds userID as a cache key)
+ perUser: false, //Set to true for caching per user (includes userID into cache key)
  keyFactory: null, //Create Func<string> for replacing default key, which is serialized json from request object
  invalidatesOnRequests: typeof(UpdateWeatherForecastsCommand), typeof(secondcommand), typeof(thirdCommand) ..... //Command types to invalidate query);
  ``` 
