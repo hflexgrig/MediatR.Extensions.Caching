@@ -36,6 +36,13 @@ Inspired by https://github.com/Iamcerba/AspNetCore.CacheOutput
  ``` 
  
  like this for GetWeatherForecastsQuery query, which will get cached for 10 minutes. And once any of invalidatesOnRequests called it will get invalidated automatically.
-  Alternative way of force invalidating queries is to use Notifications. Just publish ` _mediator.Publish(new InvalidateCacheNotification { RequestType = typeof(queryType)});` anywhere in the application e.g. in samples I use hostedService with timer to simulate some domain events, which invalidates GetTodoItemsQuery 
-  ` _mediator.Publish(new InvalidateCacheNotification { RequestType = typeof(GetTodoItemsQuery)});`
+  Alternative way of force invalidating queries is to use Notifications. Just publish 
+  ``` 
+   _mediator.Publish(new InvalidateCacheNotification { RequestTypes = new Type[]{ typeof(queryType1), typeof(queryType2), ...}});
+  ```
+  anywhere in the application e.g. in samples I use hostedService with timer to simulate some domain events, which invalidates GetTodoItemsQuery 
+  
+  ```
+  _mediator.Publish(new InvalidateCacheNotification { RequestTypes = new []{typeof(GetTodoItemsQuery)} });
+  ```
   
