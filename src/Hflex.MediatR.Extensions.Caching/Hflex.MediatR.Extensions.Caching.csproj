@@ -12,14 +12,8 @@
         <RepositoryUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching.git</RepositoryUrl>
         <PackageTags>MediatR cache inmemorycache redis rediscache distributedcache</PackageTags>
         <PackageReleaseNotes>First release of MediatR caching</PackageReleaseNotes>
-        <PackageVersion>1.0.3</PackageVersion>
+        <PackageVersion>1.0.5</PackageVersion>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
-        <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="9.0.0" />
