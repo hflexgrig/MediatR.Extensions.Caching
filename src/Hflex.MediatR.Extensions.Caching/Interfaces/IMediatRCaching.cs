@@ -1,3 +1,5 @@
+using MediatR;
+
 namespace Hflex.MediatR.Extensions.Caching.Interfaces;
 
 public interface IMediatorCaching
@@ -9,7 +11,8 @@ public interface IMediatorCaching
     Task AddAsync(string baseKey, string key, object value, DateTimeOffset expiration);
 
     Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> valueFactory)
-        where TResponse : class;
+        where TResponse : class
+        where  TRequest: class, IBaseRequest;
 
     Task InvalidateCacheAsync(Type queryRequestType);
 }

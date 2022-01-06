@@ -1,4 +1,5 @@
 using System.Text.Json;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace Hflex.MediatR.Extensions.Caching.Services;
@@ -15,14 +16,14 @@ public class CacheKeyService : ICacheKeyService
         _cachingConfiguration = cachingConfiguration;
     }
 
-    public (string baseKey, string key, ConfigurationItem config) GenerateDefaultKey<TRequest>(TRequest request)
+    public (string baseKey, string key, ConfigurationItem config) GenerateDefaultKey<TRequest>(TRequest request) where TRequest: class, IBaseRequest
     {
         _cachingConfiguration.TryGetValue(typeof(TRequest), out var config);
         var identityString =
             config.PerUser ? $"user:{_httpContextAccessor.HttpContext?.User?.Identity?.Name};" : string.Empty;
 
         var baseKey = $"class:{typeof(TRequest).FullName};{identityString}";
-        var key = config.KeyFactory == null ? $"token:{JsonSerializer.Serialize(request)}" : config.KeyFactory();
+        var key = config.KeyFactory == null ? $"token:{JsonSerializer.Serialize(request)}" : config.KeyFactory(request);
 
         return (baseKey, key, config);
     }

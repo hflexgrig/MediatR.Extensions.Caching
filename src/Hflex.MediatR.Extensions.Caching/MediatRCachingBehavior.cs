@@ -7,7 +7,7 @@ namespace Hflex.MediatR.Extensions.Caching;
 
 public class MediatRCachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where
-    TRequest : IRequest<TResponse>
+    TRequest : class, IRequest<TResponse>
     where TResponse : class
 {
     private readonly IMediatorCaching _caching;

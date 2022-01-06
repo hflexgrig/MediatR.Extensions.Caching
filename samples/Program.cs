@@ -25,7 +25,7 @@ builder.Services.AddSingleton<TodoItemsRepository>();
 var cachingConfigurations = new CachingConfiguration();
 
 //GetTodoItemsQuery will be invalidated, when timer notification will be fired on InvalidateCacheHostedService
-cachingConfigurations.AddConfiguration<GetTodoItemsQuery>(duration: TimeSpan.FromMinutes(2), false);
+cachingConfigurations.AddConfiguration<GetTodoItemsQuery>(duration: TimeSpan.FromMinutes(2), false, query => $"{query.Size}_{query.Page}");
 
 //GetWeatherForecastsQuery will be invalidated, when UpdateWeatherForecastsCommand called
 cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(10), false, null, 

@@ -2,6 +2,7 @@ using System.Net;
 using Hflex.MediatR.Extensions.Caching.Interfaces;
 using Hflex.MediatR.Extensions.Caching.Services;
 using Hflex.MediatR.Extensions.Redis.Extensions;
+using MediatR;
 using StackExchange.Redis;
 
 namespace Hflex.MediatR.Extensions.Redis;
@@ -116,6 +117,7 @@ public class RedisCacheProvider : IMediatorCaching
     }
 
     public async Task<TResponse> GetOrAddAsync<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> valueFactory)
+        where  TRequest: class, IBaseRequest
         where TResponse : class
     {
         var (baseKey, key, config) = _cacheKeyService.GenerateDefaultKey(request);
