@@ -72,7 +72,7 @@ public class InMemoryCachingProvider : IMediatorCaching
 
     public Task InvalidateCacheAsync(Type queryRequestType)
     {
-        var (baseKey, _, _) = _cacheKeyService.GenerateDefaultKey(queryRequestType);
+        var (baseKey, _) = _cacheKeyService.GenerateBaseKeyOnly(queryRequestType);
 
         return RemoveAsync(baseKey);
     }

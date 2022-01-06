@@ -12,6 +12,7 @@ public static class InMemoryCachingExtensions
     public static IServiceCollection AddInMemoryCache(this IServiceCollection services,
         CachingConfiguration cachingConfiguration)
     {
+        services.AddMediatR(typeof(CachingConfiguration).Assembly);
         services.AddSingleton(cachingConfiguration);
         services.AddSingleton<ICacheKeyService, CacheKeyService>();
 

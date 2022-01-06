@@ -13,6 +13,7 @@ public static class RedisExtensions
     public static IServiceCollection AddRedisCache(this IServiceCollection services,
         CachingConfiguration cachingConfiguration, string connectionString)
     {
+        services.AddMediatR(typeof(CachingConfiguration).Assembly);
         services.AddSingleton(cachingConfiguration);
         services.AddSingleton<ICacheKeyService, CacheKeyService>();
         services.AddHttpContextAccessor();

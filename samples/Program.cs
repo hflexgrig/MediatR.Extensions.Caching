@@ -6,6 +6,7 @@ using MediatR;
 using WebApiSample.Application.TodoItem.Commands;
 using WebApiSample.Application.TodoItem.Queries;
 using WebApiSample.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+using WebApiSample.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,11 @@ builder.Services.AddHttpContextAccessor();
 
 var cachingConfigurations = new CachingConfiguration();
 cachingConfigurations.AddConfiguration<GetTodoItemQuery>(duration: TimeSpan.FromMinutes(2), false);
-cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(2), false, null, typeof(CreateTodoItemCommand));
+cachingConfigurations.AddConfiguration<GetWeatherForecastsQuery>(TimeSpan.FromMinutes(10), false, null, typeof(CreateTodoItemCommand));
+
 builder.Services.AddRedisCache(cachingConfigurations, builder.Configuration.GetConnectionString("RedisConnectionString"));
 
+builder.Services.AddHostedService<InvalidateCacheHostedService>();
 //builder.Services.AddInMemoryCache(cachingConfigurations);
 
 var app = builder.Build();
