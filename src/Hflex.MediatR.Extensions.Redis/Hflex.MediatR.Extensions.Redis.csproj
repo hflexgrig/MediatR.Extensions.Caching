@@ -9,11 +9,12 @@
         <Description>MediatR extension for Redis cache</Description>
         <Copyright>2022</Copyright>
         <PackageProjectUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching.git</RepositoryUrl>
         <PackageTags>MediatR cache inmemorycache redis rediscache distributedcache</PackageTags>
         <PackageReleaseNotes>First release of MediatR Redis caching</PackageReleaseNotes>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.6</PackageVersion>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,4 +25,11 @@
       <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
 </Project>

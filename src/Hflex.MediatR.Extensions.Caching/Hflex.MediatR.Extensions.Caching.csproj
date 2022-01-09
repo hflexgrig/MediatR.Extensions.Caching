@@ -8,11 +8,12 @@
         <Description>MediatR extension for caching</Description>
         <Copyright>2022</Copyright>
         <PackageProjectUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/hflexgrig/MediatR.Extensions.Caching.git</RepositoryUrl>
         <PackageTags>MediatR cache inmemorycache redis rediscache distributedcache</PackageTags>
         <PackageReleaseNotes>First release of MediatR caching</PackageReleaseNotes>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.6</PackageVersion>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,6 +21,14 @@
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>
