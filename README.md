@@ -1,8 +1,6 @@
 # Hflex.MediatR.Extensions.Caching 
 Caching extension for MediatR
 
-Inspired by https://github.com/Iamcerba/AspNetCore.CacheOutput
-
 
 ## Installation
 
